@@ -1,0 +1,51 @@
+diff -durN yape.orig/archdep.cpp yape/archdep.cpp
+--- yape.orig/archdep.cpp	2001-07-22 23:47:00.000000000 +0200
++++ yape/archdep.cpp	2008-02-17 17:17:31.000000000 +0100
+@@ -49,7 +49,7 @@
+ int ad_makedirs(char *path)
+ {
+   strcpy(temp,path);
+-  strcat(temp, "/yape");
++  strcat(temp, "/.yape");
+   CreateDirectory(temp, NULL);
+ 
+   return 1;
+@@ -108,7 +108,7 @@
+ 
+   strcpy( homedir , getenv( "HOME" ));
+   //strcpy( filter, filefilter);
+-  strcat( homedir, "/yape" );
++  strcat( homedir, "/.yape" );
+   chdir ( homedir );
+   dirp = opendir( homedir );
+   //fprintf( stderr, "reading from %s\n", homedir);
+@@ -136,7 +136,7 @@
+ int ad_makedirs(char *path)
+ {
+   strcpy(temp,path);
+-  strcat(temp, "/yape");
++  strcat(temp, "/.yape");
+   mkdir(temp, 0777);
+ 
+   return 1;
+@@ -146,7 +146,7 @@
+ {
+ 
+ 	strcpy( temp, tmpchr);
+-	strcat( temp, "/yape/yape.conf");
++	strcat( temp, "/.yape/yape.conf");
+ 
+ 	return temp;
+ }
+diff -durN yape.orig/README.SDL yape/README.SDL
+--- yape.orig/README.SDL	2004-08-31 20:07:31.000000000 +0200
++++ yape/README.SDL	2008-02-17 17:17:45.000000000 +0100
+@@ -78,7 +78,7 @@
+   LALT + W	: toggle between unlimited speed and 50 Hz frame rate (original speed)
+   
+   Internal disk LOAD/SAVE operations are supported to the current
+-  file system directory, which is usually '/home/<username>/yape'.
++  file system directory, which is usually '/home/<username>/.yape'.
+   Any PRG files you may wish to load, should go there.
+    
+   This means that an exact filename match will load

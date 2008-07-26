@@ -1,0 +1,25 @@
+diff -durN yape.orig/main.cpp yape/main.cpp
+--- yape.orig/main.cpp	2004-08-03 23:52:38.000000000 +0200
++++ yape/main.cpp	2008-02-17 22:00:26.000000000 +0100
+@@ -637,6 +637,8 @@
+ 		fprintf(stderr,"Error loading settings or no .ini file present...\n");
+ 
+     //-------------------------------------------------------------------------
++        timeelapsed = time_elapsed();
++        ted8360->cpuptr = machine;
+ 	// if we have a command line parameter
+ 	if (argv[1]!='\0') {
+ 		printf("Parameter 1 :%s\n", argv[1]);
+@@ -647,12 +649,9 @@
+ 			g_TotFrames++;
+ 		}
+ 		// and then try to load the parameter as file
+-		load_file(argv[1]);
+ 		start_file(argv[1]);
+ 	}
+ 	//--------------------------------------------------------------
+-	timeelapsed = time_elapsed();
+-	ted8360->cpuptr = machine;
+ 	for (;;) {
+ 		// hook into the emulation loop if active
+ 		if (g_bActive) {

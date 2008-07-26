@@ -1,0 +1,63 @@
+--- Makefile
++++ Makefile
+@@ -13,7 +13,7 @@
+ headers = $(objects:.o=.h)
+ 
+ CC = g++
+-cflags = -O3 -finline -frerun-loop-opt -Winline `sdl-config --cflags`
++cflags = $(RPM_OPT_FLAGS) -finline-functions -Winline `sdl-config --cflags`
+ libs = `sdl-config --libs` 
+ 
+ #SDL_CFLAGS := $(shell sdl-config --cflags)
+--- interface.cpp
++++ interface.cpp
+@@ -109,7 +109,7 @@
+ 	strcpy( cfilename, "*.prg");
+ 
+ 	set_color( COLOR(0,0), COLOR(1,5) );
+-	res = (int ) ad_find_first_file((char *) cfilename);
++	res = (int )(long) ad_find_first_file((char *) cfilename);
+ 	while(res) {
+ 		strcpy( cfilename, (char *) ad_return_current_filename());
+ 		//texttoscreen(100,100+(nf<<3), cfilename);
+--- main.cpp
++++ main.cpp
+@@ -185,6 +185,8 @@
+ }
+ 
+ //-----------------------------------------------------------------------------
++#define min(a,b) ( ((a)<(b)) ? (a) : (b) )
++#define max(a,b) ( ((a)>(b)) ? (a) : (b) )
+ 
+ void init_palette(void)
+ {
+--- sound.cpp
++++ sound.cpp
+@@ -138,6 +138,8 @@
+     int i;
+     float j,k;
+ 
++    ted = (MEM *) p;
++
+ 	MixingFreq = 44100;//44100 22050 11025
+ 	FragmentSize = MixingFreq / 50;
+ 	BufferLength = 2*FragmentSize;//2*FragmentSize 2048 4096 in Windows version...
+@@ -202,7 +204,6 @@
+     Sound = 1;
+ 
+     //SDL_PauseAudio(1);
+-    ted = (MEM *) p;
+ }
+ 
+ inline void render_audio(unsigned int nrsamples, Uint8 *buffer)
+--- tape.h
++++ tape.h
+@@ -34,7 +34,7 @@
+ 		void (TAP::*write_encode)();
+ 
+ 	public:
+-		TAP::TAP();
++		TAP();
+ 		MEM *mem;
+ 		char tapefilename[256];
+ 		bool attach_tap();
