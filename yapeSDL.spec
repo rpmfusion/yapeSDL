@@ -1,21 +1,28 @@
 Name: yapeSDL
-Version: 0.32.4       
-Release: 2%{?dist}
-Summary: YAPE, yet another plus/4 emulator
+Version: 0.32.5       
+Release: 1%{?dist}
+Summary: Yet another plus/4 emulator
 
 Group: Applications/Emulators
 License: GPLv2+
 URL: http://yape.plus4.net/
 Source: http://yape.homeserver.hu/download/%{name}-%{version}.tar.gz        
-# OpenSUSE
-Patch0: %{name}-0.32.4-gcc4_cflags.patch
-# FreeBSD
-Patch1: %{name}-0.32.4-homedir.patch
+Source1: %{name}.desktop
+# Icon taken from
+# http://ahlberg.deviantart.com/art/Commodore-Icons-70563314
+# License:
+# These icons are FREE! Feel free to use them in your applications, 
+# on your site, signature on a forum or whatever.
+Source2: Plus4.png
 # Andrea Musuruane
-Patch2: %{name}-0.32.4-loadfile.patch
+Patch0: %{name}-0.32.5-cflags.patch
+Patch1: %{name}-0.32.5-homedir.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: SDL-devel >= 0:1.2
+BuildRequires: desktop-file-utils
+Requires: hicolor-icon-theme
+
 
 %description
 YAPE is a rather decent plus/4 emulator. It has been developed for 
@@ -26,18 +33,17 @@ behind the first.
 %prep
 %setup -q -c -n %{name}-%{version}
 %patch0 -p0
-%patch1 -p1
-%patch2 -p1
+%patch1 -p0
 
 # Fix end-of-line-encoding
-sed -i 's/\r//' *.{cpp,h} Changes README.SDL copying
+sed -i 's/\r//' *.{cpp,h} Changes README.SDL COPYING
 
 # Fix UTF-8 encoding
 iconv --from=ISO-8859-1 --to=UTF-8 README.SDL > README.SDL.utf8
 mv README.SDL.utf8 README.SDL
 
 # Fix spurious executable permissions
-chmod 644 *.{cpp,h} Changes README.SDL copying
+chmod 644 *.{cpp,h} Changes README.SDL COPYING
 
 
 %build
@@ -49,6 +55,30 @@ rm -rf %{buildroot}
 install -d -m 0755 %{buildroot}%{_bindir}
 install -m 0755 yape %{buildroot}%{_bindir}/
 
+# install desktop file
+mkdir -p %{buildroot}%{_datadir}/applications
+desktop-file-install --vendor '' \
+  --dir %{buildroot}%{_datadir}/applications \
+  %{SOURCE1}
+
+# install icon
+mkdir -p %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
+cp %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+
+
+%post
+touch --no-create %{_datadir}/icons/hicolor
+if [ -x %{_bindir}/gtk-update-icon-cache ]; then
+  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
+fi
+
+
+%postun
+touch --no-create %{_datadir}/icons/hicolor
+if [ -x %{_bindir}/gtk-update-icon-cache ]; then
+  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
+fi
+
 
 %clean
 rm -rf %{buildroot}
@@ -56,11 +86,17 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc Changes copying README.SDL
-%defattr(-,root,root,0755)
 %{_bindir}/yape
+%{_datadir}/applications/%{name}.desktop
+%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+%doc Changes COPYING README.SDL
 
 %changelog
+* Wed Dec 03 2008 Andrea Musuruane <musuruan@gmail.com> 0.32.5-1
+- Updated to upstream 0.32.5
+- Version 0.32.5 ships a small GUI - added a desktop entry and an icon
+- Removed the name from the summary
+
 * Tue Feb 26 2008 Andrea Musuruane <musuruan@gmail.com> 0.32.4-2
 - Minor cleanup
 

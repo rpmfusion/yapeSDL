@@ -1,0 +1,11 @@
+--- Makefile.orig	2008-12-01 12:15:43.000000000 +0100
++++ Makefile	2008-12-01 12:16:38.000000000 +0100
+@@ -24,7 +24,7 @@
+ sourcefiles = $(filter-out $(hasnoheader),$(allfiles)) device.h mem.h roms.h types.h
+ 
+ CC = g++
+-cflags = -O3 -finline -frerun-loop-opt -Winline -fomit-frame-pointer `sdl-config --cflags`
++cflags = $(RPM_OPT_FLAGS) -frerun-loop-opt -Winline -fomit-frame-pointer `sdl-config --cflags`
+ libs = `sdl-config --libs` 
+ 
+ #SDL_CFLAGS := $(shell sdl-config --cflags)
