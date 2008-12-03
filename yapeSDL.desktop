@@ -1,0 +1,10 @@
+[Desktop Entry]
+Encoding=UTF-8
+Name=YapeSDL
+Comment=Yet another plus/4 emulator
+Exec=yape
+Icon=yapeSDL
+Terminal=false
+Type=Application
+Categories=Game;Emulator;
+
