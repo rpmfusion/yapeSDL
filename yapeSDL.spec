@@ -1,6 +1,6 @@
 Name: yapeSDL
 Version: 0.32.5       
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Yet another plus/4 emulator
 
 Group: Applications/Emulators
@@ -92,6 +92,9 @@ rm -rf %{buildroot}
 %doc Changes COPYING README.SDL
 
 %changelog
+* Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 0.32.5-2
+- rebuild for new F11 features
+
 * Wed Dec 03 2008 Andrea Musuruane <musuruan@gmail.com> 0.32.5-1
 - Updated to upstream 0.32.5
 - Version 0.32.5 ships a small GUI - added a desktop entry and an icon
