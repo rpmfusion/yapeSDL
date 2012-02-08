@@ -1,6 +1,6 @@
 Name: yapeSDL
 Version: 0.32.5       
-Release: 2%{?dist}
+Release: 3%{?dist}
 Summary: Yet another plus/4 emulator
 
 Group: Applications/Emulators
@@ -92,6 +92,9 @@ rm -rf %{buildroot}
 %doc Changes COPYING README.SDL
 
 %changelog
+* Thu Feb 09 2012 Nicolas Chauvet <kwizart@gmail.com> - 0.32.5-3
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
+
 * Sun Mar 29 2009 Thorsten Leemhuis <fedora [AT] leemhuis [DOT] info> - 0.32.5-2
 - rebuild for new F11 features
 
