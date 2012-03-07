@@ -1,6 +1,6 @@
 Name: yapeSDL
 Version: 0.32.5       
-Release: 3%{?dist}
+Release: 4%{?dist}
 Summary: Yet another plus/4 emulator
 
 Group: Applications/Emulators
@@ -92,6 +92,9 @@ rm -rf %{buildroot}
 %doc Changes COPYING README.SDL
 
 %changelog
+* Thu Mar 08 2012 Nicolas Chauvet <kwizart@gmail.com> - 0.32.5-4
+- Rebuilt for c++ ABI breakage
+
 * Thu Feb 09 2012 Nicolas Chauvet <kwizart@gmail.com> - 0.32.5-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_17_Mass_Rebuild
 
