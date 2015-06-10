@@ -1,6 +1,6 @@
 Name: yapeSDL
 Version: 0.36.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: Yet another plus/4 emulator
 
 License: GPLv2+
@@ -14,7 +14,7 @@ Source1: %{name}.desktop
 # on your site, signature on a forum or whatever.
 Source2: Plus4.png
 
-BuildRequires: SDL-devel >= 0:1.2
+BuildRequires: SDL2-devel
 BuildRequires: desktop-file-utils
 Requires: hicolor-icon-theme
 
@@ -80,6 +80,9 @@ fi
 %doc Changes COPYING README.SDL
 
 %changelog
+* Wed Jun 10 2015 Andrea Musuruane <musuruan@gmail.com> - 0.36.2-2
+- Fixed BuildRequires
+
 * Tue Jun 02 2015 Andrea Musuruane <musuruan@gmail.com> - 0.36.2-1
 - Updated to upstream 0.36.2
 - Dropped obsolete Group, Buildroot, %%clean and %%defattr
