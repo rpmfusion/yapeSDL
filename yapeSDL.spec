@@ -1,12 +1,11 @@
 Name: yapeSDL
-Version: 0.32.5       
-Release: 6%{?dist}
+Version: 0.36.2
+Release: 1%{?dist}
 Summary: Yet another plus/4 emulator
 
-Group: Applications/Emulators
 License: GPLv2+
 URL: http://yape.plus4.net/
-Source: http://yape.homeserver.hu/download/%{name}-%{version}.tar.gz        
+Source: http://yape.homeserver.hu/download/%{name}-%{version}.tar.gz
 Source1: %{name}.desktop
 # Icon taken from
 # http://ahlberg.deviantart.com/art/Commodore-Icons-70563314
@@ -14,10 +13,6 @@ Source1: %{name}.desktop
 # These icons are FREE! Feel free to use them in your applications, 
 # on your site, signature on a forum or whatever.
 Source2: Plus4.png
-# Andrea Musuruane
-Patch0: %{name}-0.32.5-cflags.patch
-Patch1: %{name}-0.32.5-homedir.patch
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires: SDL-devel >= 0:1.2
 BuildRequires: desktop-file-utils
@@ -32,18 +27,16 @@ behind the first.
 
 %prep
 %setup -q -c -n %{name}-%{version}
-%patch0 -p0
-%patch1 -p0
-
-# Fix end-of-line-encoding
-sed -i 's/\r//' *.{cpp,h} Changes README.SDL COPYING
 
 # Fix UTF-8 encoding
 iconv --from=ISO-8859-1 --to=UTF-8 README.SDL > README.SDL.utf8
 mv README.SDL.utf8 README.SDL
 
-# Fix spurious executable permissions
-chmod 644 *.{cpp,h} Changes README.SDL COPYING
+# Use RPM_OPT_FLAGS
+sed -i 's/-O3 -w -finline -frerun-loop-opt -fomit-frame-pointer/$(RPM_OPT_FLAGS)/' Makefile
+
+# Don't strip binary
+sed -i 's/-o yape -s/-o yape/' Makefile
 
 
 %build
@@ -51,7 +44,6 @@ make %{?_smp_mflags}
 
 
 %install
-rm -rf %{buildroot}
 install -d -m 0755 %{buildroot}%{_bindir}
 install -m 0755 yape %{buildroot}%{_bindir}/
 
@@ -67,31 +59,33 @@ cp %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
 
 
 %post
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
-fi
+/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %postun
-touch --no-create %{_datadir}/icons/hicolor
-if [ -x %{_bindir}/gtk-update-icon-cache ]; then
-  %{_bindir}/gtk-update-icon-cache --quiet %{_datadir}/icons/hicolor || :
+if [ $1 -eq 0 ] ; then
+    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
+    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 fi
 
 
-%clean
-rm -rf %{buildroot}
+%posttrans
+/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
 
 
 %files
-%defattr(-,root,root,-)
 %{_bindir}/yape
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/32x32/apps/%{name}.png
 %doc Changes COPYING README.SDL
 
 %changelog
+* Tue Jun 02 2015 Andrea Musuruane <musuruan@gmail.com> - 0.36.2-1
+- Updated to upstream 0.36.2
+- Dropped obsolete Group, Buildroot, %%clean and %%defattr
+- Dropped cleaning at the beginning of %%install
+- Updated icon cache scriptlets to be compliant to new guidelines
+
 * Sun Aug 31 2014 Sérgio Basto <sergio@serjux.com> - 0.32.5-6
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_21_22_Mass_Rebuild
 
