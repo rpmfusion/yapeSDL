@@ -1,6 +1,6 @@
 Name: yapeSDL
-Version: 0.36.2
-Release: 2%{?dist}
+Version: 0.58.1
+Release: 1%{?dist}
 Summary: Yet another plus/4 emulator
 
 License: GPLv2+
@@ -33,10 +33,10 @@ iconv --from=ISO-8859-1 --to=UTF-8 README.SDL > README.SDL.utf8
 mv README.SDL.utf8 README.SDL
 
 # Use RPM_OPT_FLAGS
-sed -i 's/-O3 -w -finline -frerun-loop-opt -fomit-frame-pointer/$(RPM_OPT_FLAGS)/' Makefile
+sed -i 's/cflags = -O3 -w/cflags = $(RPM_OPT_FLAGS)/' Makefile
 
 # Don't strip binary
-sed -i 's/-o yape -s/-o yape/' Makefile
+sed -i 's/-o $(EXENAME) -s/-o $(EXENAME)/' Makefile
 
 
 %build
@@ -45,11 +45,11 @@ make %{?_smp_mflags}
 
 %install
 install -d -m 0755 %{buildroot}%{_bindir}
-install -m 0755 yape %{buildroot}%{_bindir}/
+install -m 0755 yapesdl %{buildroot}%{_bindir}/
 
 # install desktop file
 mkdir -p %{buildroot}%{_datadir}/applications
-desktop-file-install --vendor '' \
+desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   %{SOURCE1}
 
@@ -74,12 +74,15 @@ fi
 
 
 %files
-%{_bindir}/yape
+%{_bindir}/yapesdl
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/32x32/apps/%{name}.png
 %doc Changes COPYING README.SDL
 
 %changelog
+* Sat Aug 15 2015 Andrea Musuruane <musuruan@gmail.com> - 0.58.1-1
+- Updated to upstream 0.58.1
+
 * Wed Jun 10 2015 Andrea Musuruane <musuruan@gmail.com> - 0.36.2-2
 - Fixed BuildRequires
 
