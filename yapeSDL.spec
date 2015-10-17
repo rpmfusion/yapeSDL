@@ -1,11 +1,13 @@
+%global commit f34a47a03051
+
 Name: yapeSDL
-Version: 0.58.1
+Version: 0.58.2
 Release: 1%{?dist}
 Summary: Yet another plus/4 emulator
 
 License: GPLv2+
 URL: http://yape.plus4.net/
-Source: http://yape.homeserver.hu/download/%{name}-%{version}.tar.gz
+Source: https://download-codeplex.sec.s-msft.com/Download/SourceControlFileDownload.ashx?ProjectName=yapesdl&changeSetId=%{commit}#/%{name}-%{version}.zip
 Source1: %{name}.desktop
 # Icon taken from
 # http://ahlberg.deviantart.com/art/Commodore-Icons-70563314
@@ -31,6 +33,12 @@ behind the first.
 # Fix UTF-8 encoding
 iconv --from=ISO-8859-1 --to=UTF-8 README.SDL > README.SDL.utf8
 mv README.SDL.utf8 README.SDL
+
+# Fix end-of-line encoding
+for txtfile in COPYING README.SDL Changes
+do
+    sed -i 's/\r//' $txtfile
+done
 
 # Use RPM_OPT_FLAGS
 sed -i 's/cflags = -O3 -w/cflags = $(RPM_OPT_FLAGS)/' Makefile
@@ -80,6 +88,9 @@ fi
 %doc Changes COPYING README.SDL
 
 %changelog
+* Sat Oct 17 2015 Andrea Musuruane <musuruan@gmail.com> - 0.58.2-1
+- Updated to upstream 0.58.2
+
 * Sat Aug 15 2015 Andrea Musuruane <musuruan@gmail.com> - 0.58.1-1
 - Updated to upstream 0.58.1
 
