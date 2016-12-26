@@ -1,9 +1,9 @@
-%global commit f34a47a03051
+%global commit 7b2c2a123daf
 
 Name: yapeSDL
-Version: 0.58.2
+Version: 0.70.1
 Release: 1%{?dist}
-Summary: Yet another plus/4 emulator
+Summary: A Commodore 264 family (C16, plus/4 etc.) emulator
 
 License: GPLv2+
 URL: http://yape.plus4.net/
@@ -17,15 +17,29 @@ Source1: %{name}.desktop
 Source2: Plus4.png
 
 BuildRequires: SDL2-devel
+BuildRequires: minizip-devel
 BuildRequires: desktop-file-utils
 Requires: hicolor-icon-theme
 
 
 %description
-YAPE is a rather decent plus/4 emulator. It has been developed for 
-several years by now and it is available in Windows and 
-multiplatform editions, although the latter lags several versions 
-behind the first. 
+YAPE is a decent no-nonsense Commodore 264 family (C16, plus/4 etc.) emulator.
+
+It is being developed for 10+ years by now and is available in Windows as
+well as multiplatform (SDL) editions. The SDL version features:
+ - full, cycle exact MOS 6502/6510/7501/8501 CPU emulation
+ - almost full MOS 7360/8360 aka 'TED' chip emulation
+ - almost complete MOS 6569 aka 'VIC-II' chip emulation
+ - reasonable MOS 6581/8580 aka 'SID' chip emulation
+ - somewhat incomplete CIA 6526 aka 'CIA' emulation
+ - real 1541 drive emulation (Read/Write)
+ - full ROM banking on +4
+ - almost full tape emulation (+4 for now)
+ - joystick emulation via cursor keys and gamepads
+ - PRG, P00, T64, D64 and TAP file format support
+ - partial CRT emulation
+ - disk LOAD/SAVE to the file system on +4
+ - snapshots / savestates
 
 %prep
 %setup -q -c -n %{name}-%{version}
@@ -40,15 +54,22 @@ do
     sed -i 's/\r//' $txtfile
 done
 
+# Fix unzip.h include path
+sed -i 's!#include "zlib/unzip.h"!#include "minizip/unzip.h"!' archdep.cpp
+
 # Use RPM_OPT_FLAGS
-sed -i 's/cflags = -O3 -w/cflags = $(RPM_OPT_FLAGS)/' Makefile
+# Define ZIP_SUPPORT for preliminary ZIP file support
+sed -i 's/cflags = -O3 -w/cflags = $(RPM_OPT_FLAGS) -DZIP_SUPPORT/' Makefile
+
+# Add libminizip to libs
+sed -i 's/libs = /libs = -lminizip /' Makefile
 
 # Don't strip binary
 sed -i 's/-o $(EXENAME) -s/-o $(EXENAME)/' Makefile
 
 
 %build
-make %{?_smp_mflags}
+%make_build
 
 
 %install
@@ -88,6 +109,10 @@ fi
 %doc Changes COPYING README.SDL
 
 %changelog
+* Sun Dec 25 2016 Andrea Musuruane <musuruan@gmail.com> - 0.70.1-1
+- Updated to upstream 0.70.1
+- Updated summary and description
+
 * Sat Oct 17 2015 Andrea Musuruane <musuruan@gmail.com> - 0.58.2-1
 - Updated to upstream 0.58.2
 
