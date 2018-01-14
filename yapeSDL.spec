@@ -1,13 +1,11 @@
-%global commit 7b2c2a123daf
-
 Name: yapeSDL
-Version: 0.70.1
-Release: 3%{?dist}
+Version: 0.70.2
+Release: 1%{?dist}
 Summary: A Commodore 264 family (C16, plus/4 etc.) emulator
 
 License: GPLv2+
-URL: http://yape.plus4.net/
-Source: https://download-codeplex.sec.s-msft.com/Download/SourceControlFileDownload.ashx?ProjectName=yapesdl&changeSetId=%{commit}#/%{name}-%{version}.zip
+URL: https://github.com/calmopyrin/yapesdl
+Source: https://github.com/calmopyrin/yapesdl/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Source1: %{name}.desktop
 # Icon taken from
 # http://ahlberg.deviantart.com/art/Commodore-Icons-70563314
@@ -15,18 +13,20 @@ Source1: %{name}.desktop
 # These icons are FREE! Feel free to use them in your applications, 
 # on your site, signature on a forum or whatever.
 Source2: Plus4.png
+Source3: %{name}.appdata.xml
 
 BuildRequires: SDL2-devel
 BuildRequires: minizip-devel
 BuildRequires: desktop-file-utils
+BuildRequires: libappstream-glib
 Requires: hicolor-icon-theme
 
 
 %description
-YAPE is a decent no-nonsense Commodore 264 family (C16, plus/4 etc.) emulator.
+yapeSDL is a decent no-nonsense Commodore 264 family (C16, plus/4 etc.)
+emulator.
 
-It is being developed for 10+ years by now and is available in Windows as
-well as multiplatform (SDL) editions. The SDL version features:
+Features:
  - full, cycle exact MOS 6502/6510/7501/8501 CPU emulation
  - almost full MOS 7360/8360 aka 'TED' chip emulation
  - almost complete MOS 6569 aka 'VIC-II' chip emulation
@@ -34,81 +34,77 @@ well as multiplatform (SDL) editions. The SDL version features:
  - somewhat incomplete CIA 6526 aka 'CIA' emulation
  - real 1541 drive emulation (Read/Write)
  - full ROM banking on +4
- - almost full tape emulation (+4 for now)
+ - almost full tape emulation
  - joystick emulation via cursor keys and gamepads
  - PRG, P00, T64, D64 and TAP file format support
  - partial CRT emulation
- - disk LOAD/SAVE to the file system on +4
+ - serial IEC disk LOAD/SAVE to the file system
  - snapshots / savestates
 
 %prep
-%setup -q -c -n %{name}-%{version}
+%setup -q -n yapesdl-%{version}
 
 # Fix UTF-8 encoding
 iconv --from=ISO-8859-1 --to=UTF-8 README.SDL > README.SDL.utf8
 mv README.SDL.utf8 README.SDL
 
-# Fix end-of-line encoding
-for txtfile in COPYING README.SDL Changes
-do
-    sed -i 's/\r//' $txtfile
-done
-
 # Fix unzip.h include path
 sed -i 's!#include "zlib/unzip.h"!#include "minizip/unzip.h"!' archdep.cpp
 
-# Use RPM_OPT_FLAGS
+# Use CFLAGS
 # Define ZIP_SUPPORT for preliminary ZIP file support
-sed -i 's/cflags = -O3 -w/cflags = $(RPM_OPT_FLAGS) -DZIP_SUPPORT/' Makefile
+sed -i 's/cflags = -O3 -w/cflags = $(CFLAGS) -DZIP_SUPPORT/' Makefile
 
+# Use LDFLAGS
 # Add libminizip to libs
-sed -i 's/libs = /libs = -lminizip /' Makefile
+sed -i 's/libs = /libs = $(LDFLAGS) -lminizip /' Makefile
 
 # Don't strip binary
 sed -i 's/-o $(EXENAME) -s/-o $(EXENAME)/' Makefile
 
 
 %build
+export CFLAGS="%{optflags}"
+export LDFLAGS="%{__global_ldflags}"
 %make_build
 
 
 %install
-install -d -m 0755 %{buildroot}%{_bindir}
-install -m 0755 yapesdl %{buildroot}%{_bindir}/
+install -d %{buildroot}%{_bindir}
+install -p -m 755 yapesdl %{buildroot}%{_bindir}/
 
-# install desktop file
-mkdir -p %{buildroot}%{_datadir}/applications
+# Install desktop file
+install -d %{buildroot}%{_datadir}/applications
 desktop-file-install \
   --dir %{buildroot}%{_datadir}/applications \
   %{SOURCE1}
 
-# install icon
-mkdir -p %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
-cp %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+# Install icon
+install -d %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
+install -p -m 644 %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
 
-
-%post
-/bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-
-
-%postun
-if [ $1 -eq 0 ] ; then
-    /bin/touch --no-create %{_datadir}/icons/hicolor &>/dev/null
-    /usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
-fi
-
-
-%posttrans
-/usr/bin/gtk-update-icon-cache %{_datadir}/icons/hicolor &>/dev/null || :
+# Install AppData file
+install -d %{buildroot}%{_datadir}/metainfo
+install -p -m 644 %{SOURCE3} %{buildroot}%{_datadir}/metainfo
+appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml
 
 
 %files
 %{_bindir}/yapesdl
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+%{_datadir}/metainfo/%{name}.appdata.xml
 %doc Changes COPYING README.SDL
 
 %changelog
+* Sun Jan 14 2018 Andrea Musuruane <musuruan@gmail.com> - 0.70.2-1
+- Updated to upstream 0.70.2
+- Updated description
+- Fixed LDFLAGS usage
+- Added AppData file
+- Removed obsolete scriptlets
+- Cleanup
+
 * Thu Aug 31 2017 RPM Fusion Release Engineering <kwizart@rpmfusion.org> - 0.70.1-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_27_Mass_Rebuild
 
