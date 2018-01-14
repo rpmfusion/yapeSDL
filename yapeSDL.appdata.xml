@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop">
+<id>snes9x.desktop</id>
+	<metadata_license>CC-BY-SA-3.0</metadata_license>
+	<project_license>GPLv2+</project_license>
+	<name>yapeSDL</name>
+	<summary>Yet another plus/4 emulator</summary>
+	<description>
+		<p>
+		yapeSDL is a decent no-nonsense Commodore 264 family (C16, plus/4 etc.) emulator.
+		</p>
+	</description>
+	<url type="homepage">https://github.com/calmopyrin/yapesdl</url>
+</component>
+
