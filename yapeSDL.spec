@@ -1,6 +1,6 @@
 Name: yapeSDL
 Version: 0.70.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A Commodore 264 family (C16, plus/4 etc.) emulator
 
 License: GPLv2+
@@ -97,6 +97,9 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/%{name}.a
 %doc Changes COPYING README.SDL
 
 %changelog
+* Sun Jan 14 2018 Andrea Musuruane <musuruan@gmail.com> - 0.70.2-2
+- Fixed missing AppData file
+
 * Sun Jan 14 2018 Andrea Musuruane <musuruan@gmail.com> - 0.70.2-1
 - Updated to upstream 0.70.2
 - Updated description
