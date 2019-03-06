@@ -17,7 +17,7 @@ Source3: %{name}.appdata.xml
 
 BuildRequires: gcc-c++
 BuildRequires: SDL2-devel
-BuildRequires: minizip-devel
+BuildRequires: minizip-compat-devel
 BuildRequires: desktop-file-utils
 BuildRequires: libappstream-glib
 Requires: hicolor-icon-theme
