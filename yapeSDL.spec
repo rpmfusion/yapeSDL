@@ -1,6 +1,6 @@
 Name: yapeSDL
 Version: 0.70.2
-Release: 7%{?dist}
+Release: 8%{?dist}
 Summary: A Commodore 264 family (C16, plus/4 etc.) emulator
 
 License: GPLv2+
@@ -17,7 +17,11 @@ Source3: %{name}.appdata.xml
 
 BuildRequires: gcc-c++
 BuildRequires: SDL2-devel
+%if 0%{?fedora} >= 30
 BuildRequires: minizip-compat-devel
+%else
+BuildRequires: minizip-devel
+%endif
 BuildRequires: desktop-file-utils
 BuildRequires: libappstream-glib
 Requires: hicolor-icon-theme
@@ -65,8 +69,7 @@ sed -i 's/-o $(EXENAME) -s/-o $(EXENAME)/' Makefile
 
 
 %build
-export CFLAGS="%{optflags}"
-export LDFLAGS="%{__global_ldflags}"
+%set_build_flags macro
 %make_build
 
 
@@ -99,6 +102,10 @@ appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/%{name}.a
 %license COPYING
 
 %changelog
+* Thu Mar 07 2019 Andrea Musuruane <musuruan@gmail.com> - 0.70.2-8
+- Updated BR to minizip-compat-devel for F30+
+- Used %%set_build_flags macro
+
 * Tue Mar 05 2019 RPM Fusion Release Engineering <leigh123linux@gmail.com> - 0.70.2-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
