@@ -1,0 +1,29 @@
+From f28839b5d51c9a86bfe850b2278db06daba42709 Mon Sep 17 00:00:00 2001
+From: calmopyrin <calmopyrin@users.noreply.github.com>
+Date: Sat, 20 Jul 2024 15:56:53 +0200
+Subject: [PATCH] Force machine switch
+
+Force switch when dialog window fails to show (Linux SDL issue)
+---
+ main.cpp | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
+
+diff --git a/main.cpp b/main.cpp
+index 0719799..e322ebf 100644
+--- a/main.cpp
++++ b/main.cpp
+@@ -852,9 +852,11 @@ static void confirmEmulationLevelChange(unsigned int shiftPressed)
+ 		NULL
+ 	};
+ 
+-	if (SDL_ShowMessageBox(&messageboxdata, &buttonid) < 0)
+-		SDL_Log("error opening window");
+-	else if (buttonid == 0) 
++	if (SDL_ShowMessageBox(&messageboxdata, &buttonid) < 0) {
++		SDL_Log("Error opening window: %s\n", SDL_GetError());
++		buttonid = 0;
++	}
++	if (buttonid == 0) 
+ #endif
+ 	{
+ 		char name[64];

@@ -1,27 +1,20 @@
 Name: yapeSDL
-Version: 0.71.2
-Release: 3%{?dist}
+Version: 0.80.1
+Release: 1%{?dist}
 Summary: A Commodore 264 family (C16, plus/4 etc.) emulator
 
-License: GPLv2+
+License: GPL-2.0-or-later
 URL: https://github.com/calmopyrin/yapesdl
 Source: https://github.com/calmopyrin/yapesdl/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
 Source1: %{name}.desktop
-# Icon taken from
-# http://ahlberg.deviantart.com/art/Commodore-Icons-70563314
-# License:
-# These icons are FREE! Feel free to use them in your applications, 
-# on your site, signature on a forum or whatever.
-Source2: Plus4.png
-Source3: %{name}.appdata.xml
+Source2: %{name}.appdata.xml
+# Force switch when dialog window fails to show
+# https://github.com/calmopyrin/yapesdl/commit/f28839b5d51c9a86bfe850b2278db06daba42709
+Patch0: %{name}-0.80.1-force_machine_switch.patch
 
 BuildRequires: gcc-c++
 BuildRequires: SDL2-devel
-%if 0%{?fedora} >= 30
 BuildRequires: minizip-compat-devel
-%else
-BuildRequires: minizip-devel
-%endif
 BuildRequires: desktop-file-utils
 BuildRequires: libappstream-glib
 Requires: hicolor-icon-theme
@@ -47,11 +40,14 @@ Features:
  - snapshots / savestates
 
 %prep
-%setup -q -n yapesdl-%{version}
+%autosetup -n yapesdl-%{version} -p1
 
 # Fix UTF-8 encoding
 iconv --from=ISO-8859-1 --to=UTF-8 README.SDL > README.SDL.utf8
 mv README.SDL.utf8 README.SDL
+
+# Remove bundled libs
+rm -rf zlib
 
 # Fix unzip.h include path
 sed -i 's!#include "zlib/unzip.h"!#include "minizip/unzip.h"!' archdep.cpp
@@ -85,23 +81,28 @@ desktop-file-install \
 
 # Install icon
 install -d %{buildroot}%{_datadir}/icons/hicolor/32x32/apps
-install -p -m 644 %{SOURCE2} %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
+install -p -m 644 plus4.xcassets/MacAppIcon.appiconset/icon_32x32.png \
+   %{buildroot}%{_datadir}/icons/hicolor/32x32/apps/%{name}.png
 
 # Install AppData file
-install -d %{buildroot}%{_datadir}/metainfo
-install -p -m 644 %{SOURCE3} %{buildroot}%{_datadir}/metainfo
-appstream-util validate-relax --nonet %{buildroot}%{_datadir}/metainfo/%{name}.appdata.xml
+install -d %{buildroot}%{_metainfodir}
+install -p -m 644 %{SOURCE2} %{buildroot}%{_metainfodir}
+appstream-util validate-relax --nonet \
+  %{buildroot}%{_metainfodir}/%{name}.appdata.xml
 
 
 %files
 %{_bindir}/yapesdl
 %{_datadir}/applications/%{name}.desktop
 %{_datadir}/icons/hicolor/32x32/apps/%{name}.png
-%{_datadir}/metainfo/%{name}.appdata.xml
+%{_metainfodir}/%{name}.appdata.xml
 %doc Changes README.SDL
 %license COPYING
 
 %changelog
+* Tue Jul 30 2024 Andrea Musuruane <musuruan@gmail.com> - 0.80.1-1
+- Updated to upstream 0.80.1
+
 * Sun Feb 04 2024 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 0.71.2-3
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
 
