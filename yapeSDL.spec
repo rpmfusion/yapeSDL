@@ -1,6 +1,6 @@
 Name: yapeSDL
 Version: 0.80.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Summary: A Commodore 264 family (C16, plus/4 etc.) emulator
 
 License: GPL-2.0-or-later
@@ -100,6 +100,9 @@ appstream-util validate-relax --nonet \
 %license COPYING
 
 %changelog
+* Wed Jan 29 2025 RPM Fusion Release Engineering <sergiomb@rpmfusion.org> - 0.80.1-2
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_42_Mass_Rebuild
+
 * Tue Jul 30 2024 Andrea Musuruane <musuruan@gmail.com> - 0.80.1-1
 - Updated to upstream 0.80.1
 
